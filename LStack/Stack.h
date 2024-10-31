@@ -13,22 +13,22 @@ class TStack
 	T* pMem;
 	int MaxSize, Num;
 public:
-	TStack(int _MaxSize = 10); //конструктор инициализации
-	~TStack(); //деструктор
-	TStack(const TStack &s); //конструктор копирования
-	int GetMaxSize() { return MaxSize; } // размер стека
-	int GetNum() { return Num; } // индекс Num
-	TStack& operator=(const TStack<T> s); //оператор присваивания
-	bool operator==(const TStack& s) const; //сравнение равно
-	bool operator!=(const TStack& s) const; //сравнение не равно
-	T Pop(); //извлечение элемента из стека
-	void Push(T val); //добавление элемента в стек
-	bool Empty() const; // проверка на пустоту Num = -1
-	bool Full() const; // проверка на полноту Nun = MaxSize-1
-	T Top() const; //посмотреть на вершинку стека
-	void Clear(); //очистка стека Clear
+	TStack(int _MaxSize = 10); //РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РёРЅРёС†РёР°Р»РёР·Р°С†РёРё
+	~TStack(); //РґРµСЃС‚СЂСѓРєС‚РѕСЂ
+	TStack(const TStack &s); //РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РєРѕРїРёСЂРѕРІР°РЅРёСЏ
+	int GetSize() { return MaxSize; } // СЂР°Р·РјРµСЂ СЃС‚РµРєР°
+	int GetStartIndex() { return Num; } // РёРЅРґРµРєСЃ Num
+	TStack& operator=(const TStack<T> s); //РѕРїРµСЂР°С‚РѕСЂ РїСЂРёСЃРІР°РёРІР°РЅРёСЏ
+	bool operator==(const TStack& s) const; //СЃСЂР°РІРЅРµРЅРёРµ СЂР°РІРЅРѕ
+	bool operator!=(const TStack& s) const; //СЃСЂР°РІРЅРµРЅРёРµ РЅРµ СЂР°РІРЅРѕ
+	T Pop(); //РёР·РІР»РµС‡РµРЅРёРµ СЌР»РµРјРµРЅС‚Р° РёР· СЃС‚РµРєР°
+	void Push(T val); //РґРѕР±Р°РІР»РµРЅРёРµ СЌР»РµРјРµРЅС‚Р° РІ СЃС‚РµРє
+	bool Empty() const; // РїСЂРѕРІРµСЂРєР° РЅР° РїСѓСЃС‚РѕС‚Сѓ Num = -1
+	bool Full() const; // РїСЂРѕРІРµСЂРєР° РЅР° РїРѕР»РЅРѕС‚Сѓ Nun = MaxSize-1
+	T Top() const; //РїРѕСЃРјРѕС‚СЂРµС‚СЊ РЅР° РІРµСЂС€РёРЅРєСѓ СЃС‚РµРєР°
+	void Clear(); //РѕС‡РёСЃС‚РєР° СЃС‚РµРєР° Clear
 	bool Check(string str);
-	friend istream& operator>>(istream& in, TStack& s) //ввод элемента
+	friend istream& operator>>(istream& in, TStack& s) //РІРІРѕРґ СЌР»РµРјРµРЅС‚Р°
 	{
 		if (this->isFull())
 			throw -1;
@@ -36,7 +36,7 @@ public:
 		in >> s.pMem[Num];
 		return in;
 	}
-	friend ostream& operator<<(ostream& out, const TStack& s) //вывод элемента
+	friend ostream& operator<<(ostream& out, const TStack& s) //ГўГ»ГўГ®Г¤ ГЅГ«ГҐГ¬ГҐГ­ГІГ 
 	{
 		if (this->isEmpty())
 			throw - 1;
@@ -100,7 +100,7 @@ bool TStack<T>::operator==(const TStack& s) const
 	}
 	return true;
 }
-template <class T> 
+template <class T> // СЃСЂР°РІРЅРµРЅРёРµ
 bool TStack<T>::operator!=(const TStack& s) const
 {
 	return !(*this == s);
@@ -174,9 +174,9 @@ class TCalc
 	TStack<double> StNum;
 	TStack<char> StClon;
 public:
-	//конструктор может быть пустым
+	//РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј
 	//set get infix, postfix
-	void ToPostfix();//преобразовать из infix в postfix
+	void ToPostfix();//РїСЂРµРѕР±СЂР°Р·РѕРІР°С‚СЊ РёР· infix РІ postfix
 	double CalcPostfix();
 	double Calc();
 };
@@ -204,7 +204,7 @@ double TCalc::CalcPostfix() {
 				StNum.Push(Num1 / Num2);
 			}
 		}
-		//извлечь элемент, проверка стека на пустоту - если пуст - хорошо, иначе исключение
+		//РёР·РІР»РµС‡СЊ СЌР»РµРјРµРЅС‚, РїСЂРѕРІРµСЂРєР° СЃС‚РµРєР° РЅР° РїСѓСЃС‚РѕС‚Сѓ - РµСЃР»Рё РїСѓСЃС‚ - С…РѕСЂРѕС€Рѕ, РёРЅР°С‡Рµ РёСЃРєР»СЋС‡РµРЅРёРµ
 		return StNum.Pop();
 	}
 }
