@@ -1,5 +1,10 @@
 #pragma once
 #include <iostream>
+#include <vector>
+#include <set>
+#include <algorithm>
+#include <map>
+#include <math.h>
 using namespace std;
 const int MAXS = 10000;
 template <class T>
@@ -11,8 +16,8 @@ public:
 	TStack(int _MaxSize = 10); //конструктор инициализации
 	~TStack(); //деструктор
 	TStack(const TStack &s); //конструктор копирования
-	int GetSize() { return MaxSize; } // размер стека
-	int GetStartIndex() { return Num; } // индекс Num
+	int GetMaxSize() { return MaxSize; } // размер стека
+	int GetNum() { return Num; } // индекс Num
 	TStack& operator=(const TStack<T> s); //оператор присваивания
 	bool operator==(const TStack& s) const; //сравнение равно
 	bool operator!=(const TStack& s) const; //сравнение не равно
@@ -22,6 +27,7 @@ public:
 	bool Full() const; // проверка на полноту Nun = MaxSize-1
 	T Top() const; //посмотреть на вершинку стека
 	void Clear(); //очистка стека Clear
+	bool Check(string str);
 	friend istream& operator>>(istream& in, TStack& s) //ввод элемента
 	{
 		if (this->isFull())
@@ -79,7 +85,7 @@ TStack<T>& TStack<T>::operator=(const TStack<T> s)
 		pMem[i] = s.pMem[i];
 	return *this;
 }
-template <class T> // сравнение
+template <class T>
 bool TStack<T>::operator==(const TStack& s) const
 {
 	if (this == &s)
@@ -94,7 +100,7 @@ bool TStack<T>::operator==(const TStack& s) const
 	}
 	return true;
 }
-template <class T> // сравнение
+template <class T> 
 bool TStack<T>::operator!=(const TStack& s) const
 {
 	return !(*this == s);
@@ -116,7 +122,7 @@ bool TStack<T>::Full() const
 template <class T>
 T TStack<T>::Pop()
 {
-	if (this->isEmpty())
+	if (this->Empty())
 		throw - 1;
 	T tmp = pMem[Num];
 	Num--;
@@ -125,7 +131,7 @@ T TStack<T>::Pop()
 template <class T>
 void TStack<T>::Push(T val)
 {
-	if (this->isFull())
+	if (this->Full())
 		throw - 1;
 	Num++;
 	pMem[Num] = val;
@@ -133,7 +139,7 @@ void TStack<T>::Push(T val)
 template <class T>
 T TStack<T>::Top() const
 {
-	if (this->isEmpty())
+	if (this->Empty())
 		throw - 1;
 	return pMem[Num];
 }
@@ -142,7 +148,7 @@ void TStack<T>::Clear() {
 	Num = -1;
 }
 template <class T>
-bool Check(string str)
+bool TStack<T>::Check(string str)
 {
 	TStack<char> s;
 	bool res = true;
@@ -160,4 +166,45 @@ bool Check(string str)
 	if (!s.Empty())
 		return false;
 	return true;
+}
+class TCalc
+{
+	string infix;
+	string postfix;
+	TStack<double> StNum;
+	TStack<char> StClon;
+public:
+	//конструктор может быть пустым
+	//set get infix, postfix
+	void ToPostfix();//преобразовать из infix в postfix
+	double CalcPostfix();
+	double Calc();
+};
+double TCalc::CalcPostfix() {
+	StNum.Clear();
+	StClon.Clear();
+	for (int i = 0; i < postfix.size(); i++)
+	{
+		if (postfix[i] >= '0' && postfix[i] <= '9')
+			StNum.Push(postfix[i] - '0');
+		if (postfix[i] == '+' || postfix[i] == '-' || postfix[i] == '*' || postfix[i] == '/')
+		{
+			double Num2 = StNum.Pop();
+			double Num1 = StNum.Pop();
+			if (postfix[i] == '+')
+				StNum.Push(Num1 + Num2);
+			if (postfix[i] == '-')
+				StNum.Push(Num1 - Num2);
+			if (postfix[i] == '*')
+				StNum.Push(Num1 * Num2);
+			if (postfix[i] == '/')
+			{
+				if (Num2 == 0)
+					throw - 1;
+				StNum.Push(Num1 / Num2);
+			}
+		}
+		//извлечь элемент, проверка стека на пустоту - если пуст - хорошо, иначе исключение
+		return StNum.Pop();
+	}
 }
