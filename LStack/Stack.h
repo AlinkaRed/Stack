@@ -8,21 +8,21 @@ class TStack
 	T* pMem;
 	int MaxSize, Num;
 public:
-	TStack(int _MaxSize = 10); //конструктор инициализации
-	~TStack(); //деструктор
-	TStack(const TStack &s); //конструктор копирования
-	int GetSize() { return MaxSize; } // размер стека
-	int GetStartIndex() { return Num; } // индекс Num
-	TStack& operator=(const TStack<T> s); //оператор присваивания
-	bool operator==(const TStack& s) const; //сравнение равно
-	bool operator!=(const TStack& s) const; //сравнение не равно
-	T Pop(); //извлечение элемента из стека
-	void Push(T val); //добавление элемента в стек
-	bool Empty() const; // проверка на пустоту Num = -1
-	bool Full() const; // проверка на полноту Nun = MaxSize-1
-	T Top() const; //посмотреть на вершинку стека
-	void Clear(); //очистка стека Clear
-	friend istream& operator>>(istream& in, TStack& s) //ввод элемента
+	TStack(int _MaxSize = 10); //ГЄГ®Г­Г±ГІГ°ГіГЄГІГ®Г° ГЁГ­ГЁГ¶ГЁГ Г«ГЁГ§Г Г¶ГЁГЁ
+	~TStack(); //Г¤ГҐГ±ГІГ°ГіГЄГІГ®Г°
+	TStack(const TStack &s); //ГЄГ®Г­Г±ГІГ°ГіГЄГІГ®Г° ГЄГ®ГЇГЁГ°Г®ГўГ Г­ГЁГї
+	int GetMaxSize() { return MaxSize; } // Г°Г Г§Г¬ГҐГ° Г±ГІГҐГЄГ 
+	int GetNum() { return Num; } // ГЁГ­Г¤ГҐГЄГ± Num
+	TStack& operator=(const TStack<T> s); //Г®ГЇГҐГ°Г ГІГ®Г° ГЇГ°ГЁГ±ГўГ ГЁГўГ Г­ГЁГї
+	bool operator==(const TStack& s) const; //Г±Г°Г ГўГ­ГҐГ­ГЁГҐ Г°Г ГўГ­Г®
+	bool operator!=(const TStack& s) const; //Г±Г°Г ГўГ­ГҐГ­ГЁГҐ Г­ГҐ Г°Г ГўГ­Г®
+	T Pop(); //ГЁГ§ГўГ«ГҐГ·ГҐГ­ГЁГҐ ГЅГ«ГҐГ¬ГҐГ­ГІГ  ГЁГ§ Г±ГІГҐГЄГ 
+	void Push(T val); //Г¤Г®ГЎГ ГўГ«ГҐГ­ГЁГҐ ГЅГ«ГҐГ¬ГҐГ­ГІГ  Гў Г±ГІГҐГЄ
+	bool Empty() const; // ГЇГ°Г®ГўГҐГ°ГЄГ  Г­Г  ГЇГіГ±ГІГ®ГІГі Num = -1
+	bool Full() const; // ГЇГ°Г®ГўГҐГ°ГЄГ  Г­Г  ГЇГ®Г«Г­Г®ГІГі Nun = MaxSize-1
+	T Top() const; //ГЇГ®Г±Г¬Г®ГІГ°ГҐГІГј Г­Г  ГўГҐГ°ГёГЁГ­ГЄГі Г±ГІГҐГЄГ 
+	void Clear(); //Г®Г·ГЁГ±ГІГЄГ  Г±ГІГҐГЄГ  Clear
+	friend istream& operator>>(istream& in, TStack& s) //ГўГўГ®Г¤ ГЅГ«ГҐГ¬ГҐГ­ГІГ 
 	{
 		if (this->isFull())
 			throw -1;
@@ -30,7 +30,7 @@ public:
 		in >> s.pMem[Num];
 		return in;
 	}
-	friend ostream& operator<<(ostream& out, const TStack& s) //вывод элемента
+	friend ostream& operator<<(ostream& out, const TStack& s) //ГўГ»ГўГ®Г¤ ГЅГ«ГҐГ¬ГҐГ­ГІГ 
 	{
 		if (this->isEmpty())
 			throw - 1;
@@ -79,7 +79,7 @@ TStack<T>& TStack<T>::operator=(const TStack<T> s)
 		pMem[i] = s.pMem[i];
 	return *this;
 }
-template <class T> // сравнение
+template <class T>
 bool TStack<T>::operator==(const TStack& s) const
 {
 	if (this == &s)
@@ -94,7 +94,7 @@ bool TStack<T>::operator==(const TStack& s) const
 	}
 	return true;
 }
-template <class T> // сравнение
+template <class T>
 bool TStack<T>::operator!=(const TStack& s) const
 {
 	return !(*this == s);
