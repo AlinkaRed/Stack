@@ -174,7 +174,7 @@ class TCalc
 	TStack<double> StNum;
 	TStack<char> StChar;
 public:
-	TCalc();//конструктор может быть пустым
+	TCalc();//конструктор
 	void SetInfix(string _infix) {
 		infix = _infix;
 	}
@@ -190,8 +190,7 @@ public:
 	void ToPostfix(); //преобразовать из infix в postfix
 	double CalcPostfix();
 	double Calc();
-	int Prior(char op); //у ( приотритет меньше, чем у любой другой операции
-	//(((1+2)*3)^4-5)/6 ((( кладется в стек, дальше + и ) выталкивает (+, дальше заносится *, ) выталкивает (*, ^ и -: у ^ выше приоритет, выполняется, далее - и тд
+	int Prior(char op);
 };
 TCalc::TCalc()
 {
@@ -214,9 +213,11 @@ double TCalc::CalcPostfix() {
 	StChar.Clear();
 	for (int i = 0; i < postfix.length(); i++)
 	{
-		if (postfix[i] >= '0' && postfix[i] <= '9')
+		if (i>0 && postfix[i] >= '0' && postfix[i] <= '9' && postfix[i-1] == '_')
+			StNum.Push((postfix[i] - '0')*(-1));
+		else if (postfix[i] >= '0' && postfix[i] <= '9')
 			StNum.Push(postfix[i] - '0');
-		if (postfix[i] == '+' || postfix[i] == '-' || postfix[i] == '*' || postfix[i] == '/' || postfix[i] == '^')
+		else if (postfix[i] == '+' || postfix[i] == '-' || postfix[i] == '*' || postfix[i] == '/' || postfix[i] == '^')
 		{
 			double Num2 = StNum.Pop();
 			double Num1 = StNum.Pop();
@@ -240,7 +241,7 @@ double TCalc::CalcPostfix() {
 	}
 	int a = StNum.Pop();
 	if (StNum.Empty() == 0)
-		throw - 1;//извлечь элемент, проверка стека на пустоту - если пуст - хорошо, иначе исключение
+		throw - 1;
 	return a;
 }
 void TCalc::ToPostfix() {
@@ -249,8 +250,10 @@ void TCalc::ToPostfix() {
 	string s = "(" + infix + ")";
 	for (int i = 0; i < s.length(); i++)
 	{
-		if (s[i] == '(') 
+		if (s[i] == '(')
 			StChar.Push(s[i]);
+		else if (s[i - 1] == '(' && s[i] == '-')
+			postfix += '_';
 		else if (s[i] <= '9' && s[i] >= '0')
 			postfix += s[i];
 		else if (s[i] == ')')
