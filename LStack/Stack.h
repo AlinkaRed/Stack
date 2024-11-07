@@ -30,17 +30,17 @@ public:
 	bool Check(string str);
 	friend istream& operator>>(istream& in, TStack& s) //ввод элемента
 	{
-		if (this->isFull())
+		if (s.Full())
 			throw -1;
 		Num++;
-		in >> s.pMem[Num];
+		in >> s.pMem[s.Num];
 		return in;
 	}
 	friend ostream& operator<<(ostream& out, const TStack& s) //âûâîä ýëåìåíòà
 	{
-		if (this->isEmpty())
+		if (s.Empty())
 			throw - 1;
-		out << s.pMem[Num];
+		out << s.pMem[s.Num];
 		return out;
 	}
 };
@@ -100,7 +100,7 @@ bool TStack<T>::operator==(const TStack& s) const
 	}
 	return true;
 }
-template <class T> // сравнение
+template <class T>
 bool TStack<T>::operator!=(const TStack& s) const
 {
 	return !(*this == s);
@@ -122,7 +122,7 @@ bool TStack<T>::Full() const
 template <class T>
 T TStack<T>::Pop()
 {
-	if (this->Empty())
+	if (Empty())
 		throw - 1;
 	T tmp = pMem[Num];
 	Num--;
@@ -131,7 +131,7 @@ T TStack<T>::Pop()
 template <class T>
 void TStack<T>::Push(T val)
 {
-	if (this->Full())
+	if (Full())
 		throw - 1;
 	Num++;
 	pMem[Num] = val;
@@ -195,20 +195,28 @@ public:
 };
 TCalc::TCalc()
 {
-
+	StNum = TStack<double>(MAXS);
+	StChar = TStack<char>(MAXS);
 }
-void TCalc::ToPostfix()
+int TCalc::Prior(char op)
 {
-
+	if (op == '+' || op == '-')
+		return 1;
+	else if (op == '*' || op == '/')
+		return 2;
+	else if (op == '^')
+		return 3;
+	else if (op == '(')
+		return 0;
 }
 double TCalc::CalcPostfix() {
 	StNum.Clear();
 	StChar.Clear();
-	for (int i = 0; i < postfix.size(); i++)
+	for (int i = 0; i < postfix.length(); i++)
 	{
 		if (postfix[i] >= '0' && postfix[i] <= '9')
 			StNum.Push(postfix[i] - '0');
-		if (postfix[i] == '+' || postfix[i] == '-' || postfix[i] == '*' || postfix[i] == '/')
+		if (postfix[i] == '+' || postfix[i] == '-' || postfix[i] == '*' || postfix[i] == '/' || postfix[i] == '^')
 		{
 			double Num2 = StNum.Pop();
 			double Num1 = StNum.Pop();
@@ -224,10 +232,16 @@ double TCalc::CalcPostfix() {
 					throw - 1;
 				StNum.Push(Num1 / Num2);
 			}
+			if (postfix[i] == '^')
+			{
+				StNum.Push(pow(Num1,Num2));
+			}
 		}
-		//извлечь элемент, проверка стека на пустоту - если пуст - хорошо, иначе исключение
-		return StNum.Pop();
 	}
+	int a = StNum.Pop();
+	if (StNum.Empty() == 0)
+		throw - 1;//извлечь элемент, проверка стека на пустоту - если пуст - хорошо, иначе исключение
+	return a;
 }
 void TCalc::ToPostfix() {
 	postfix = "";
@@ -237,7 +251,7 @@ void TCalc::ToPostfix() {
 	{
 		if (s[i] == '(') 
 			StChar.Push(s[i]);
-		else if (s[i] - '0' <= 9 && s[i] - '0' >= 9) 
+		else if (s[i] <= '9' && s[i] >= '0')
 			postfix += s[i];
 		else if (s[i] == ')')
 		{
