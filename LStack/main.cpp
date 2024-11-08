@@ -3,39 +3,18 @@
 using namespace std;
 int main()
 {
+	system("color 0B");
 	TStack<int> s(10);
 	s.Push(3);
 	s.Push(4);
 	s.Push(2);
 	//cout << s.Pop() << endl;
 	TCalc c;
-	c.SetInfix("2+4");
+	c.SetInfix("4-8+(9-6)^5+7/8+3*6");
 	c.ToPostfix();
-	double a = c.CalcPostfix();
 	cout << c.CalcPostfix() << endl;
-	c.SetInfix("2-9");
+	c.SetInfix("2+7-5");
 	c.ToPostfix();
-	a = c.CalcPostfix();
-	cout << c.CalcPostfix() << endl;
-	c.SetInfix("8+7-1-8");
-	c.ToPostfix();
-	a = c.CalcPostfix();
-	cout << c.CalcPostfix() << endl;
-	c.SetInfix("-2-1");
-	c.ToPostfix();
-	a = c.CalcPostfix();
-	cout << c.CalcPostfix() << endl;
-	c.SetInfix("(9+8)*3-4");
-	c.ToPostfix();
-	a = c.CalcPostfix();
-	cout << c.CalcPostfix() << endl;
-	c.SetInfix("6^2*7+2-1");
-	c.ToPostfix();
-	a = c.CalcPostfix();
-	cout << c.CalcPostfix() << endl;
-	c.SetInfix("(8-1)*2-7^3");
-	c.ToPostfix();
-	a = c.CalcPostfix();
-	cout << c.CalcPostfix() << endl;
+	cout << c.GetPostfix() << endl;
 	return 0;
 }

@@ -207,6 +207,8 @@ int TCalc::Prior(char op)
 		return 3;
 	else if (op == '(')
 		return 0;
+	else if (op == ')')
+		return 0;
 }
 double TCalc::CalcPostfix() {
 	StNum.Clear();
@@ -235,6 +237,9 @@ double TCalc::CalcPostfix() {
 			}
 			if (postfix[i] == '^')
 			{
+				int p = pow(Num2, -1);
+				if (p % 2 == 0 && Num1 < 0)
+					throw - 1;
 				StNum.Push(pow(Num1,Num2));
 			}
 		}
@@ -271,5 +276,7 @@ void TCalc::ToPostfix() {
 				postfix += StChar.Pop();
 			StChar.Push(s[i]);
 		}
+		else
+			throw - 1;
 	}
 }

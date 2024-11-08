@@ -122,6 +122,72 @@ TEST(TStack, compare_equal_stacks_return_true)
 	s2.Push(1);
 	EXPECT_TRUE(s1 == s2);
 }
+TEST(TStack, throws_when_accessing_top_on_empty_stack)
+{
+	TStack<int> s(8);
+	ASSERT_ANY_THROW(s.Top());
+}
+TEST(TStack, can_peek_top_element_without_removing)
+{
+	TStack<int> s(3);
+	s.Push(8);
+	EXPECT_EQ(s.Top(), 8);
+	EXPECT_FALSE(s.Empty());
+}
+TEST(TStack, full_stack_reports_as_full)
+{
+	TStack<int> s(2);
+	s.Push(1);
+	s.Push(7);
+	EXPECT_TRUE(s.Full());
+}
+TEST(TStack, empty_stacks_of_same_size_are_equal)
+{
+	TStack<int> s1(5);
+	TStack<int> s2(5);
+	EXPECT_EQ(s1, s2);
+}
+TEST(TStack, copying_stack_does_not_modify_original)
+{
+	TStack<int> s(3);
+	s.Push(1);
+	s.Push(2);
+	TStack<int> a(s);
+	a.Pop();
+	EXPECT_EQ(s.Top(), 2);
+}
+TEST(TStack, can_push_and_check_top)
+{
+	TStack<int> s(5);
+	s.Push(11);
+	EXPECT_EQ(s.Top(), 11); 
+	EXPECT_EQ(s.Pop(), 11); 
+	EXPECT_TRUE(s.Empty()); 
+}
+TEST(TStack, clear_works_correctly_on_non_empty_stack)
+{
+	TStack<int> s(9);
+	s.Push(7);
+	s.Push(2);
+	s.Push(3);
+	s.Clear();
+	EXPECT_TRUE(s.Empty());
+	EXPECT_ANY_THROW(s.Pop());
+}
+
+//..............................................................................................
+TEST(TCalc, can_create_postfix) {
+	TCalc c;
+	c.SetInfix("2+7-5");
+	EXPECT_NO_THROW(c.ToPostfix());
+	c.ToPostfix();
+	EXPECT_EQ(c.GetPostfix(), "27+5-");
+}
+TEST(TCalc, can_not_create_wrong_postfix) {
+	TCalc c;
+	c.SetInfix("2+7A5");
+	EXPECT_ANY_THROW(c.ToPostfix());
+}
 TEST(TCalc, can_perform_arithmetic_expressions)
 {
 	TCalc c;
@@ -137,6 +203,9 @@ TEST(TCalc, can_perform_arithmetic_expressions)
 	c.SetInfix("-2-1");
 	c.ToPostfix();
 	EXPECT_EQ(c.CalcPostfix(), -3);
+	c.SetInfix("(-2)-1");
+	c.ToPostfix();
+	EXPECT_EQ(c.CalcPostfix(), -3);
 	c.SetInfix("(9+8)*3-4");
 	c.ToPostfix();
 	EXPECT_EQ(c.CalcPostfix(), 47);
@@ -146,4 +215,28 @@ TEST(TCalc, can_perform_arithmetic_expressions)
 	c.SetInfix("(8-1)*2-7^3");
 	c.ToPostfix();
 	EXPECT_EQ(c.CalcPostfix(), -329);
+}
+TEST(TCalc, throws_when_dividing_by_zero) {
+	TCalc c;
+	c.SetInfix("9/0");
+	c.ToPostfix();
+	EXPECT_ANY_THROW(c.CalcPostfix());
+}
+TEST(TCalc, throws_when_taking_an_even_root_of_a_negative_number) {
+	TCalc c;
+	c.SetInfix("(-4)^(1/2)");
+	c.ToPostfix();
+	EXPECT_ANY_THROW(c.CalcPostfix());
+}
+TEST(TCalc, throws_when_invalid_expression) {
+	TCalc c;
+	c.SetInfix("+");
+	c.ToPostfix();
+	EXPECT_ANY_THROW(c.CalcPostfix());
+	c.SetInfix("9+*3");
+	c.ToPostfix();
+	EXPECT_ANY_THROW(c.CalcPostfix());
+	c.SetInfix("8*");
+	c.ToPostfix();
+	EXPECT_ANY_THROW(c.CalcPostfix());
 }
