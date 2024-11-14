@@ -13,8 +13,7 @@ int main()
 	c.SetInfix("4-8+(9-6)^5+7/8+3*6");
 	c.ToPostfix();
 	cout << c.CalcPostfix() << endl;
-	c.SetInfix("2+7-5");
-	c.ToPostfix();
-	cout << c.GetPostfix() << endl;
+	c.SetInfix("6/4");
+	cout << c.Calc() << endl;
 	return 0;
 }

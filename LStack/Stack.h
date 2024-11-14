@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <map>
 #include <math.h>
+#include <string>
 using namespace std;
 const int MAXS = 10000;
 template <class T>
@@ -151,22 +152,20 @@ template <class T>
 bool TStack<T>::Check(string str)
 {
 	TStack<char> s;
-	bool res = true;
-	for (int i = 0; i < str.size(); i++)
+	for (char ch : str)
 	{
-		if (str[i] == '(')
-			s.Push('(');
-		if (str[i] == ')')
+		if (ch == '(')
+			s.Push('('); 
+		else if (ch == ')')
 		{
 			if (s.Empty())
 				return false;
 			s.Pop();
 		}
 	}
-	if (!s.Empty())
-		return false;
-	return true;
+	return s.Empty();
 }
+
 class TCalc
 {
 	string infix;
@@ -174,7 +173,7 @@ class TCalc
 	TStack<double> StNum;
 	TStack<char> StChar;
 public:
-	TCalc();//конструктор
+	TCalc();
 	void SetInfix(string _infix) {
 		infix = _infix;
 	}
@@ -187,7 +186,7 @@ public:
 	string GetPostfix() {
 		return postfix;
 	}
-	void ToPostfix(); //преобразовать из infix в postfix
+	void ToPostfix();
 	double CalcPostfix();
 	double Calc();
 	int Prior(char op);
@@ -205,10 +204,7 @@ int TCalc::Prior(char op)
 		return 2;
 	else if (op == '^')
 		return 3;
-	else if (op == '(')
-		return 0;
-	else if (op == ')')
-		return 0;
+	else return 0;
 }
 double TCalc::CalcPostfix() {
 	StNum.Clear();
@@ -217,8 +213,9 @@ double TCalc::CalcPostfix() {
 	{
 		if (i>0 && postfix[i] >= '0' && postfix[i] <= '9' && postfix[i-1] == '_')
 			StNum.Push((postfix[i] - '0')*(-1));
-		else if (postfix[i] >= '0' && postfix[i] <= '9')
+		else if (postfix[i] >= '0' && postfix[i] <= '9') {
 			StNum.Push(postfix[i] - '0');
+		}
 		else if (postfix[i] == '+' || postfix[i] == '-' || postfix[i] == '*' || postfix[i] == '/' || postfix[i] == '^')
 		{
 			double Num2 = StNum.Pop();
@@ -253,14 +250,18 @@ void TCalc::ToPostfix() {
 	postfix = "";
 	StChar.Clear();
 	string s = "(" + infix + ")";
+	if (!StChar.Check(infix)) {
+		throw - 1;
+	}
 	for (int i = 0; i < s.length(); i++)
 	{
 		if (s[i] == '(')
 			StChar.Push(s[i]);
 		else if (s[i - 1] == '(' && s[i] == '-')
 			postfix += '_';
-		else if (s[i] <= '9' && s[i] >= '0')
+		else if (s[i] <= '9' && s[i] >= '0' || s[i]=='.') {
 			postfix += s[i];
+		}
 		else if (s[i] == ')')
 		{
 			char a = StChar.Pop();
@@ -279,4 +280,96 @@ void TCalc::ToPostfix() {
 		else
 			throw - 1;
 	}
+	if (StChar.Empty() == 0)
+		throw - 1;
+}
+double TCalc::Calc() {
+	string str = "(" + infix + ")";
+	StNum.Clear();
+	StChar.Clear();
+	if (!StChar.Check(infix)) {
+		throw - 1;
+	}
+	for (int i = 0; i < str.size(); i++)
+	{
+		char tmp = str[i];
+		if (tmp == '(')
+			StChar.Push(tmp);
+		else if (str[i - 1] == '(' && tmp == '-')
+			str[i] = '_';
+		else if (i > 0 && tmp >= '0' && tmp <= '9' && str[i - 1] == '_')
+		{
+			size_t idx;
+			double num = stod(&tmp, &idx);
+			StNum.Push(num*(-1.0));
+			i += idx - 1;
+		}
+		else if (tmp >= '0' && tmp <= '9' || tmp == '.') {
+			size_t idx;
+			double num = stod(&tmp, &idx);
+			StNum.Push(num);
+			i += idx - 1;
+		}
+		else if (tmp == ')')
+		{
+			char a = StChar.Pop();
+			while (a != '(')
+			{
+				double Num2 = StNum.Pop();
+				double Num1 = StNum.Pop();
+				if (a == '+')
+					StNum.Push(Num1 + Num2);
+				if (a == '-')
+					StNum.Push(Num1 - Num2);
+				if (a == '*')
+					StNum.Push(Num1 * Num2);
+				if (a == '/')
+				{
+					if (Num2 == 0)
+						throw - 1;
+					StNum.Push(Num1 / Num2);
+				}
+				if (a == '^')
+				{
+					int p = pow(Num2, -1);
+					if (p % 2 == 0 && Num1 < 0)
+						throw - 1;
+					StNum.Push(pow(Num1, Num2));
+				}
+				a = StChar.Pop();
+			}
+		}
+		else if (tmp == '+' || tmp == '-' || tmp == '*' || tmp == '/' || tmp == '^')
+		{
+			while (Prior(StChar.Top()) >= Prior(tmp)) {
+				double Num2 = StNum.Pop();
+				double Num1 = StNum.Pop();
+				char a = StChar.Pop();
+				if (a == '+')
+					StNum.Push(Num1 + Num2);
+				if (a == '-')
+					StNum.Push(Num1 - Num2);
+				if (a == '*')
+					StNum.Push(Num1 * Num2);
+				if (a == '/')
+				{
+					if (Num2 == 0)
+						throw - 1;
+					StNum.Push(Num1 / Num2);
+				}
+				if (a == '^')
+				{
+					int p = pow(Num2, -1);
+					if (p % 2 == 0 && Num1 < 0)
+						throw - 1;
+					StNum.Push(pow(Num1, Num2));
+				}
+			}
+			StChar.Push(tmp);
+		}
+	}
+	double a = StNum.Pop();
+	if (StNum.Empty() == 0)
+		throw - 1;
+	return a;
 }
