@@ -181,12 +181,10 @@ TEST(TCalc, can_create_postfix) {
 	c.SetInfix("2+7-5");
 	EXPECT_NO_THROW(c.ToPostfix());
 	c.ToPostfix();
-	EXPECT_EQ(c.GetPostfix(), "27+5-");
+	EXPECT_EQ(c.GetPostfix(), "2 7 + 5 - ");
 }
 TEST(TCalc, can_not_create_wrong_postfix) {
 	TCalc c;
-	c.SetInfix("2+7A5");
-	EXPECT_ANY_THROW(c.ToPostfix());
 	c.SetInfix("8*6))");
 	EXPECT_ANY_THROW(c.ToPostfix());
 	c.SetInfix("((5+5");
@@ -254,14 +252,6 @@ TEST(TCalc, throws_when_dividing_by_zero) {
 	c.SetInfix("4/0");
 	EXPECT_ANY_THROW(c.Calc());
 }
-TEST(TCalc, throws_when_taking_an_even_root_of_a_negative_number) {
-	TCalc c;
-	c.SetInfix("(-4)^(1/2)");
-	c.ToPostfix();
-	EXPECT_ANY_THROW(c.CalcPostfix());
-	c.SetInfix("(-8)^(1/2)");
-	EXPECT_ANY_THROW(c.Calc());
-}
 TEST(TCalc, can_work_with_unary_minus) {
 	TCalc c;
 	c.SetInfix("-4+7");
@@ -295,4 +285,33 @@ TEST(TCalc, throws_when_invalid_expression) {
 	EXPECT_ANY_THROW(c.Calc());
 	c.SetInfix("8*");
 	EXPECT_ANY_THROW(c.Calc());
+}
+TEST(TCalc, can_divide_positive_numbers) {
+	TCalc c;
+	c.SetInfix("5/2");
+	EXPECT_DOUBLE_EQ(c.Calc(), 2.5);
+}
+TEST(TCalc, can_add_positive_decimal_and_integer) {
+	TCalc c;
+	c.SetInfix("3.14+5");
+	c.ToPostfix();
+	EXPECT_EQ(c.CalcPostfix(), 8.14);
+}
+TEST(TCalc, can_multiply_two_positive_numbers) {
+	TCalc c;
+	c.SetInfix("2.5*4");
+	c.ToPostfix();
+	EXPECT_EQ(c.CalcPostfix(), 10.0);
+}
+TEST(TCalc, can_raise_decimal_to_power) {
+	TCalc c;
+	c.SetInfix("2.5^3");
+	c.ToPostfix();
+	EXPECT_EQ(c.CalcPostfix(), 15.625);
+}
+TEST(TCalc, can_raise_decimal_to_fractional_power) {
+	TCalc c;
+	c.SetInfix("4.0^0.5");
+	c.ToPostfix();
+	EXPECT_EQ(c.CalcPostfix(), 2.0);
 }

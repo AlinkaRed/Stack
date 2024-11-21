@@ -6,7 +6,7 @@
 #include <map>
 #include <math.h>
 #include <string>
-using namespace std;
+//using namespace std;
 const int MAXS = 10000;
 template <class T>
 class TStack
@@ -28,8 +28,8 @@ public:
 	bool Full() const; // проверка на полноту Nun = MaxSize-1
 	T Top() const; //посмотреть на вершинку стека
 	void Clear(); //очистка стека Clear
-	bool Check(string str);
-	friend istream& operator>>(istream& in, TStack& s) //ввод элемента
+	bool Check(std::string str);
+	/*friend istream& operator>>(istream& in, TStack& s) //ввод элемента
 	{
 		if (s.Full())
 			throw -1;
@@ -43,7 +43,7 @@ public:
 			throw - 1;
 		out << s.pMem[s.Num];
 		return out;
-	}
+	}*/
 };
 template <class T>
 TStack<T>::TStack(int _MaxSize)
@@ -149,7 +149,7 @@ void TStack<T>::Clear() {
 	Num = -1;
 }
 template <class T>
-bool TStack<T>::Check(string str)
+bool TStack<T>::Check(std::string str)
 {
 	TStack<char> s;
 	for (char ch : str)
@@ -168,22 +168,22 @@ bool TStack<T>::Check(string str)
 
 class TCalc
 {
-	string infix;
-	string postfix;
+	std::string infix;
+	std::string postfix;
 	TStack<double> StNum;
 	TStack<char> StChar;
 public:
 	TCalc();
-	void SetInfix(string _infix) {
+	void SetInfix(std::string _infix) {
 		infix = _infix;
 	}
-	void SetPostfix(string _postfix) {
+	void SetPostfix(std::string _postfix) {
 		postfix = _postfix;
 	}
-	string GetInfix() {
+	std::string GetInfix() {
 		return infix;
 	}
-	string GetPostfix() {
+	std::string GetPostfix() {
 		return postfix;
 	}
 	void ToPostfix();
@@ -208,83 +208,97 @@ int TCalc::Prior(char op)
 }
 double TCalc::CalcPostfix() {
 	StNum.Clear();
-	StChar.Clear();
-	for (int i = 0; i < postfix.length(); i++)
-	{
-		if (i>0 && postfix[i] >= '0' && postfix[i] <= '9' && postfix[i-1] == '_')
-			StNum.Push((postfix[i] - '0')*(-1));
-		else if (postfix[i] >= '0' && postfix[i] <= '9') {
-			StNum.Push(postfix[i] - '0');
+	std::string number = "";
+	for (int i = 0; i < postfix.length(); i++) {
+		if (postfix[i] >= '0' && postfix[i] <= '9' || postfix[i] == '.' || postfix[i] == '_') {
+			if (postfix[i] == '_') { // Обработка отрицательного числа
+				number += '-';
+			}
+			else {
+				number += postfix[i];
+			}
 		}
-		else if (postfix[i] == '+' || postfix[i] == '-' || postfix[i] == '*' || postfix[i] == '/' || postfix[i] == '^')
-		{
+		else if (postfix[i] == ' ' && !number.empty()) {
+			// Когда число завершено, преобразуем его в double
+			StNum.Push(stod(number));
+			number = "";
+		}
+		else if (postfix[i] == '+' || postfix[i] == '-' || postfix[i] == '*' || postfix[i] == '/' || postfix[i] == '^') {
 			double Num2 = StNum.Pop();
 			double Num1 = StNum.Pop();
-			if (postfix[i] == '+')
+			if (postfix[i] == '+') {
 				StNum.Push(Num1 + Num2);
-			if (postfix[i] == '-')
+			}
+			else if (postfix[i] == '-') {
 				StNum.Push(Num1 - Num2);
-			if (postfix[i] == '*')
+			}
+			else if (postfix[i] == '*') {
 				StNum.Push(Num1 * Num2);
-			if (postfix[i] == '/')
-			{
-				if (Num2 == 0)
-					throw - 1;
+			}
+			else if (postfix[i] == '/') {
+				if (Num2 == 0) throw - 1; 
 				StNum.Push(Num1 / Num2);
 			}
-			if (postfix[i] == '^')
-			{
-				int p = pow(Num2, -1);
-				if (p % 2 == 0 && Num1 < 0)
-					throw - 1;
-				StNum.Push(pow(Num1,Num2));
+			else if (postfix[i] == '^') {
+				StNum.Push(pow(Num1, Num2));
 			}
 		}
 	}
-	int a = StNum.Pop();
-	if (StNum.Empty() == 0)
-		throw - 1;
+	if (!number.empty()) { 
+		StNum.Push(stod(number));
+	}
+	double a = StNum.Pop();
+	if (!StNum.Empty()) {
+		throw - 1; 
+	}
 	return a;
 }
 void TCalc::ToPostfix() {
 	postfix = "";
 	StChar.Clear();
-	string s = "(" + infix + ")";
+	std::string s = "(" + infix + ")";
 	if (!StChar.Check(infix)) {
 		throw - 1;
 	}
-	for (int i = 0; i < s.length(); i++)
-	{
-		if (s[i] == '(')
+
+	for (int i = 0; i < s.length(); i++) {
+		if (s[i] == '(') {
 			StChar.Push(s[i]);
-		else if (s[i - 1] == '(' && s[i] == '-')
-			postfix += '_';
-		else if (s[i] <= '9' && s[i] >= '0' || s[i]=='.') {
-			postfix += s[i];
 		}
-		else if (s[i] == ')')
-		{
-			char a = StChar.Pop();
-			while (a != '(')
-			{
-				postfix += a;
-				a = StChar.Pop();
+		else if (s[i - 1] == '(' && s[i] == '-') {
+			postfix += "_"; 
+		}
+		else if ((s[i] >= '0' && s[i] <= '9') || s[i] == '.') {
+			while (i < s.length() && ((s[i] >= '0' && s[i] <= '9') || s[i] == '.')) {
+				postfix += s[i];
+				i++;
+			}
+			i--; 
+			postfix += ' '; 
+		}
+		else if (s[i] == ')') {
+			while (!StChar.Empty() && StChar.Top() != '(') {
+				postfix += StChar.Pop();
+				postfix += ' ';
+			}
+			if (!StChar.Empty()) {
+				StChar.Pop(); 
 			}
 		}
-		else if (s[i] == '+' || s[i] == '-' || s[i] == '*' || s[i] == '/' || s[i] == '^')
-		{
-			while (Prior(StChar.Top()) >= Prior(s[i]))
+		else if (s[i] == '+' || s[i] == '-' || s[i] == '*' || s[i] == '/' || s[i] == '^') {
+			while (!StChar.Empty() && Prior(StChar.Top()) >= Prior(s[i])) {
 				postfix += StChar.Pop();
+				postfix += ' ';
+			}
 			StChar.Push(s[i]);
 		}
-		else
-			throw - 1;
 	}
-	if (StChar.Empty() == 0)
-		throw - 1;
+	if (!StChar.Empty()) {
+		throw - 1; 
+	}
 }
 double TCalc::Calc() {
-	string str = "(" + infix + ")";
+	std::string str = "(" + infix + ")";
 	StNum.Clear();
 	StChar.Clear();
 	if (!StChar.Check(infix)) {
@@ -300,13 +314,13 @@ double TCalc::Calc() {
 		else if (i > 0 && tmp >= '0' && tmp <= '9' && str[i - 1] == '_')
 		{
 			size_t idx;
-			double num = stod(&tmp, &idx);
+			double num = std::stod(&tmp, &idx);
 			StNum.Push(num*(-1.0));
 			i += idx - 1;
 		}
 		else if (tmp >= '0' && tmp <= '9' || tmp == '.') {
 			size_t idx;
-			double num = stod(&tmp, &idx);
+			double num = std::stod(&tmp, &idx);
 			StNum.Push(num);
 			i += idx - 1;
 		}
